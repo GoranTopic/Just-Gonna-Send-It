@@ -3,13 +3,15 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.get('/', function(req, res) {
-		   res.sendFile('index.html');
-		
+		res.sendFile('/index.html', { root: __dirname  } );
 });
 
 //Whenever someone connects this gets executed
 io.on('connection', function(socket) {
 		console.log('A user connected');
+
+		// Send a message after a timeout of 4 seconds
+		setTimeout(() => socket.send('Sent a message 4 seconds after connection!'), 4000);
 
 		//Whenever someone disconnects this piece of code executed
 		socket.on('disconnect', function () {

@@ -3,22 +3,28 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.get('/', function(req, res) {
-		res.sendFile('/index.html', { root: __dirname  } );
+		res.sendfile('index.html');
+
 });
 
-//Whenever someone connects this gets executed
+users = [];
 io.on('connection', function(socket) {
 		console.log('A user connected');
+		socket.on('setUsername', function(data) {
+				if(users.indexOf(data) > -1) {
+						users.push(data);
+						socket.emit('userSet', {username: data});
 
-		// Send a message after a timeout of 4 seconds
-		setTimeout(() => socket.send('Sent a message 4 seconds after connection!'), 4000);
+				} else {
+						socket.emit('userExists', data + ' username is taken! Try some other username.');
 
-		//Whenever someone disconnects this piece of code executed
-		socket.on('disconnect', function () {
-				console.log('A user disconnected');
-		});
+				}
+
+		})
+
 });
 
 http.listen(3000, function() {
-		console.log('listening on *:3000');
+		console.log('listening on localhost:3000');
+
 });
